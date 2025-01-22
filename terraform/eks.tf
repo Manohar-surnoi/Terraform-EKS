@@ -6,19 +6,17 @@ module "eks" {
   cluster_endpoint_public_access = true
 
   cluster_addons = {
-    coredns = {  # default service discovery mechanism
+    coredns = {
       most_recent = true
     }
-    kube_proxy = {  # manage networking within cluster
+    kube-proxy = {
       most_recent = true
     }
-    vpc_cni = {  # container network interface
+    vpc-cni = {
       most_recent = true
     }
   }
-}
 
- # Networking
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
@@ -27,22 +25,24 @@ module "eks" {
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
     instance_types = ["m5.large"]
+
     attach_cluster_primary_security_group = true
   }
 
   eks_managed_node_groups = {
-    cluster-wg = {
+      cluster-wg = {
       min_size     = 1
       max_size     = 2
       desired_size = 1
+
       instance_types = ["t3.large"]
       capacity_type  = "SPOT"
+
       tags = {
         ExtraTag = "helloworld"
       }
     }
   }
 
-  # Tags for the EKS cluster
   tags = local.tags
 }
